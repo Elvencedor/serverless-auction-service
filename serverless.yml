@@ -2,7 +2,6 @@ service: auction-service
 
 plugins:
   - serverless-bundle
-  - serverless-pseudo-parameters
 
 provider:
   name: aws
@@ -12,9 +11,23 @@ provider:
   region: eu-north-1
   
 functions:
-  hello:
-    handler: src/handlers/hello.handler
+  createAuction:
+    handler: src/handlers/auction/create.handler
     events:
       - http:
-          method: GET
-          path: /hello
+          method: POST
+          path: /auction
+
+resources:
+  Resources:
+    AuctionsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: AuctionsTable
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
